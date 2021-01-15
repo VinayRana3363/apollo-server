@@ -1,10 +1,11 @@
 import Express from 'express';
 import pkg from 'apollo-server-express';
 
-const { ApolloServer } = pkg;
 class Server {
   constructor(config) {
     this.config = config;
+    // eslint-disable-next-line no-console
+    console.log('config: ', config);
     this.app = Express();
   }
 
@@ -17,7 +18,7 @@ class Server {
 
   setupRouts() {
     const { app } = this;
-    app.get('/health-check', (req, res, next) => {
+    app.get('/health-check', (req, res) => {
       res.send('I am fine');
     });
     return this;
@@ -25,6 +26,7 @@ class Server {
 
   setupApollo(schema) {
     const { app } = this;
+    const { ApolloServer } = pkg;
     this.Server = new ApolloServer({
       ...schema
     });
@@ -34,11 +36,11 @@ class Server {
 
   run() {
     const { app, config: { PORT } } = this;
-    app.listen(7000, (err) => {
+    app.listen(PORT, (err) => {
       if (err) {
         console.log(err);
       }
-      console.log(`App is running on port ${PORT}`);
+      console.log(`App is running on PORT ${PORT}`);
     });
   }
 }
