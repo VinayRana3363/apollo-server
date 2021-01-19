@@ -1,17 +1,15 @@
 import Express from 'express';
+import { createServer } from 'http';
 import pkg from 'apollo-server-express';
 
 class Server {
   constructor(config) {
     this.config = config;
-    // eslint-disable-next-line no-console
     console.log('config: ', config);
     this.app = Express();
   }
 
   bootstrap() {
-    // this.setupApollo(schema);
-    // return this;
     this.setupRouts();
     return this;
   }
@@ -31,12 +29,14 @@ class Server {
       ...schema
     });
     this.Server.applyMiddleware({ app });
+    this.httpServer = createServer(app);
+    this.Server.installSubscriptionHandlers(this.httpServer);
     this.run();
   }
 
   run() {
-    const { app, config: { PORT } } = this;
-    app.listen(PORT, (err) => {
+    const { config: { PORT } } = this;
+    this.httpServer.listen(PORT, (err) => {
       if (err) {
         console.log(err);
       }
