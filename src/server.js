@@ -1,6 +1,7 @@
 import Express from 'express';
 import { createServer } from 'http';
 import pkg from 'apollo-server-express';
+import { UserAPI } from './datasource/index.js';
 
 class Server {
   constructor(config) {
@@ -26,7 +27,17 @@ class Server {
     const { app } = this;
     const { ApolloServer } = pkg;
     this.Server = new ApolloServer({
-      ...schema
+      ...schema,
+      dataSources: () => {
+        const userAPI = new UserAPI();
+        return { userAPI };
+      },
+      context: ({ req }) => {
+        if (req) {
+          return { token: req.headers.authorization};
+        }
+        return {};
+      }
     });
     this.Server.applyMiddleware({ app });
     this.httpServer = createServer(app);
