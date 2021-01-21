@@ -1,5 +1,22 @@
 input CreateUserInput {
     name: String!
     email: String!
+    password: String!
     role: String!
 }
+
+input LoginInput {
+    email: String!
+    password: String!
+}
+
+input UpdateUser {
+  originalId: ID!,
+  dataToUpdate: DataToUpdate!
+}
+
+input DataToUpdate {
+    name: String,
+    role: String,
+    email: String,
+  }

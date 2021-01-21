@@ -1,25 +1,28 @@
-import pubsub from '../pubsub.js';
 import userInstance from '../../service/user.js';
-import constant from '../../lib/constant.js'
+import pubsub from '../pubsub.js';
+import constant from '../../lib/constant.js';
 
 export default {
-  createTrainee: (parent, args, context) => {
+  createTrainee: async (parent, args, context) => {
     const { user } = args;
-    const createRecord = userInstance.createUser(user);
-    pubsub.publish(constant.subscriptions.TRAINEE_ADDED, { traineeAdded: createRecord });
-    return createRecord;
+    const { dataSources: { traineeAPI } } = context;
+    const addedUser = await traineeAPI.createTrainee({ userData: { ...user } });
+    pubsub.publish(constant.subscriptions.TRAINEE_ADDED, { traineeAdded: addedUser.data });
+    return addedUser.data;
   },
-  updateTrainee: (parent, args, context) => {
-    const { id, role } = args;
-    const updateRecord = userInstance.updateUser(id, role);
-    pubsub.publish(constant.subscriptions.TRAINEE_UPDATED, { traineeUpdated: updateRecord });
-    return updateRecord;
+  updateTrainee:async (parent, args, context) => {
+    const { user } = args;
+    const { dataSources: { traineeAPI } } = context;
+    const updatedUser = await traineeAPI.updateTrainee({...user});
+    pubsub.publish(constant.subscriptions.TRAINEE_UPDATED, { traineeUpdated: updatedUser.data });
+    return updatedUser.data;
   },
-  deleteTrainee: (parent, args, context) => {
+  deleteTrainee: async (parent, args, context) => {
     const { id } = args;
-    const deleteRecord = userInstance.deleteUser(id);
-    pubsub.publish(constant.subscriptions.TRAINEE_DELETED, { traineeDeleted: deleteRecord });
-    return deleteRecord;
+    const { dataSources: { traineeAPI } } = context;
+    const deletedUser = await traineeAPI.deleteTrainee(id);
+    console.log(deletedUser);
+    pubsub.publish(constant.subscriptions.TRAINEE_DELETED, { traineeDeleted: deletedUser.data });
+    return deletedUser.data;
   }
-
-}
+};
