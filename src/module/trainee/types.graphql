@@ -20,3 +20,9 @@ input DataToUpdate {
     role: String,
     email: String,
   }
+
+input GetInput {
+  skip: String
+  limit: String
+  sort: String
+}
